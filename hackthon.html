@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Adventure Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .game-container {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 24px;
+    }
+    .question {
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #eee;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 16px;
+    }
+    .options button:hover {
+      background: #4facfe;
+      color: white;
+    }
+    .story {
+      margin: 15px 0;
+      font-style: italic;
+      color: #333;
+    }
+    #next-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: #00c6ff;
+      color: white;
+      cursor: pointer;
+      display: none;
+    }
+    #score-screen {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Adventure Quiz</h1>
+    <p class="story">You wake up in a mysterious forest... Can you escape?</p>
+    <div id="quiz">
+      <div class="question" id="question">Question text</div>
+      <div class="options" id="options"></div>
+      <button id="next-btn">Next</button>
+    </div>
+    <div id="score-screen">
+      <h2>Your Adventure Ends!</h2>
+      <p id="final-score"></p>
+      <button onclick="location.reload()">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "You see two paths. One leads to a cave, the other to a river. Which way?",
+        options: ["Cave", "River", "Climb a tree", "Stay put"],
+        answer: 1,
+        story: "You find a small boat near the river..."
+      },
+      {
+        question: "The boat takes you across, but a troll blocks the way. What do you do?",
+        options: ["Fight", "Run", "Answer his riddle", "Swim back"],
+        answer: 2,
+        story: "The troll asks you a question and lets you pass..."
+      },
+      {
+        question: "Finally, you see a castle gate. How do you enter?",
+        options: ["Knock politely", "Sneak in", "Climb the wall", "Wait for someone"],
+        answer: 0,
+        story: "The guard respects your manners and lets you in!"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const storyEl = document.querySelector(".story");
+    const quizEl = document.getElementById("quiz");
+    const scoreScreen = document.getElementById("score-screen");
+    const finalScore = document.getElementById("final-score");
+
+    function loadQuestion() {
+      let q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(index);
+        optionsEl.appendChild(btn);
+      });
+      nextBtn.style.display = "none";
+    }
+
+    function checkAnswer(selected) {
+      let correct = questions[currentQuestion].answer;
+      if (selected === correct) {
+        score++;
+        storyEl.textContent = "✅ Correct! " + questions[currentQuestion].story;
+      } else {
+        storyEl.textContent = "❌ Wrong choice! You stumble, but move on...";
+      }
+      Array.from(optionsEl.children).forEach(btn => btn.disabled = true);
+      nextBtn.style.display = "block";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        endGame();
+      }
+    });
+
+    function endGame() {
+      quizEl.style.display = "none";
+      scoreScreen.style.display = "block";
+      finalScore.textContent = `You scored ${score} out of ${questions.length}. 
+        ${score === questions.length ? "You are a true adventurer! 🏆" : "Try again to escape perfectly!"}`;
+    }
+
+    // Start game
+    loadQuestion();
+  </script>
+</body>
+</html>
